@@ -17,8 +17,8 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     devices:
       - /dev/snd:/dev/snd
-      - /dev/imu_bwt901cl:/dev/imu_bwt901cl
-      - /dev/lidar_ydlidar:/dev/lidar_ydlidar
+      #- /dev/imu_bwt901cl:/dev/imu_bwt901cl
+      #- /dev/lidar_ydlidar:/dev/lidar_ydlidar
       - /dev/ttyAMA0:/dev/ttyAMA0
       - /dev/gpiochip0
       - /dev/gpiochip4

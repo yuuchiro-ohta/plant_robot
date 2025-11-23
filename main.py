@@ -9,7 +9,6 @@ import serial
 import math
 import json
 import re
-import dynamixel_module as motor
 import concurrent.futures
 from enums import Path, Const
 from dotenv import load_dotenv
@@ -21,8 +20,6 @@ ARECORD_DEVICE = os.getenv("ARECORD_DEVICE")
 OLLAMA_PATH = os.getenv("OLLAMA_PATH")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL") 
 
-#initial_position =[280, 150, 180, 280, 150, 180, 280, 150, 180, 280, 150, 180]
-initial_position =[280, 180, 180, 280, 180, 180, 280, 180, 180, 280, 180, 180]
 def record_audio(filename, duration=10):
     """
     指定された録音時間で声を録音する
@@ -77,8 +74,7 @@ def generate_text_with_ollama(input_text):
     """
     prompt = input_text
     roll = """
-    （あなたは右手と左手がある人工知能ロボットです。返答は日本語のみで50文字以内で返してください。絵文字はなし。
-    [talk]として会話であなたが返答する内容を、[action]として会話の内容であなたが行う行動を記載してJSON形式で返答してください。）
+    （あなたは植物です。返答は日本語のみで50文字以内で返してください。絵文字はなし。）
     """
     prompt = prompt + roll
 
@@ -91,18 +87,7 @@ def generate_text_with_ollama(input_text):
         }
     )
 
-    error_dict = { "talk": "すみません、よく分かりませんでした", "action": "None" }
-
-    match = re.search(r"```json\s*(\{.*\})\s*```?", response.json()["response"], re.DOTALL)
-    if match:
-        json_str = match.group(1)
-        result_dict = json.loads(json_str)
-        return result_dict
-    else:
-        print("JSON部分が見つかりません")
-        return error_dict
-    
-    #return response.json()["response"]
+    return response.json()["response"]
 
 def speak_text_with_openjtalk(text):
     """
@@ -125,82 +110,10 @@ def speak_text_with_openjtalk(text):
     # aplayで再生
     subprocess.run(["paplay", Path.OUTPUT_VOICE_DIR], check=True)
 
-
-def wait_motion():
-        motor.dynamixel_position_rotate(2, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(3, 240)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(2, 180)
-
-        time.sleep(0.05)
-
-
-        motor.dynamixel_position_rotate(11, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(12, 240)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(11, 180)
-
-        time.sleep(0.05)
-
-        motor.dynamixel_position_rotate(8, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(9, 240)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(8, 180)
-
-        time.sleep(0.05)
-
-        motor.dynamixel_position_rotate(5, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(6, 240)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(5, 180)
-
-
-        motor.dynamixel_position_rotate(2, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(3, 180)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(2, 180)
-
-        time.sleep(0.05)
-
-
-        motor.dynamixel_position_rotate(11, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(12, 180)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(11, 180)
-
-        time.sleep(0.05)
-
-        motor.dynamixel_position_rotate(8, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(9, 180)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(8, 180)
-
-        time.sleep(0.05)
-
-        motor.dynamixel_position_rotate(5, 120)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(6, 180)
-        time.sleep(0.05)
-        motor.dynamixel_position_rotate(5, 180)
-
-
 def main():
 
     speak_text_with_openjtalk("起動します")
     time.sleep(0.1)
-
-    for i, position in enumerate(initial_position, start=1):
-        motor.dynamixel_lED_control(i, 1)
-        motor.dynamixel_torque_control(i, 1)
-        motor.dynamixel_position_rotate(i, position)
-        time.sleep(0.01)
 
     speak_text_with_openjtalk("起動完了しました")
     time.sleep(0.1)
@@ -233,21 +146,12 @@ def main():
                 while not generate_text.done():
                     # ここに「返答を待つ間にしたいこと」を入れる
                     speak_text_with_openjtalk("答える内容を考えています")
-                    wait_motion()
+                    time.sleep(1.0)
+
 
             print(f"\n[INFO] テキスト生成結果: {generate_text.result()}")
-            speak_text_with_openjtalk(generate_text.result()["talk"])
-
-            if ( "右手" in generate_text.result()["action"]): 
-                motor.dynamixel_position_rotate(11, 100)
-                time.sleep(0.1)
-                motor.dynamixel_position_rotate(11, 180)
-
-            elif ( "左手" in generate_text.result()["action"]): 
-                motor.dynamixel_position_rotate(8, 100)
-                time.sleep(0.1)
-                motor.dynamixel_position_rotate(8, 180)
-            
+            speak_text_with_openjtalk(generate_text.result())
+    
             wait_questions = "続けて何か質問はありますか"
             time.sleep(0.05)
 
