@@ -1,0 +1,8 @@
+{
+  "name": "speak_and_listen",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "speech",  // 起動したいサービス名に書き換えてください
+  "workspaceFolder": "/app"  // コンテナ内のワークスペースと合わせてください
+}

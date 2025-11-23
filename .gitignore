@@ -1,0 +1,12 @@
+.env
+
+voice/generate_text
+voice/input_voice
+voice/output_voice
+ros2_ws/voice/generate_text
+ros2_ws/voice/input_voice
+ros2_ws/voice/output_voice
+
+ros2_ws/build
+ros2_ws/install
+ros2_ws/log

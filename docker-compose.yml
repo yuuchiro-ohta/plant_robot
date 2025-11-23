@@ -1,0 +1,39 @@
+services:
+  speech:
+    build: 
+      context: .
+      args:
+        USER_NAME: ${USER_NAME}
+        USER_ID: ${USER_ID}
+        USER_GID: ${USER_GID}
+        GPIO_GID: ${GPIO_GID}
+    env_file:
+      - .env
+    container_name: speech-app
+    volumes:
+      - .:/app
+      - /run/user/${USER_ID}/pulse/native:/run/user/${USER_ID}/pulse/native
+      - /home/${USER_NAME}/.config/pulse/cookie:/home/${USER_NAME}/.config/pulse/cookie:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    devices:
+      - /dev/snd:/dev/snd
+      - /dev/imu_bwt901cl:/dev/imu_bwt901cl
+      - /dev/lidar_ydlidar:/dev/lidar_ydlidar
+      - /dev/ttyAMA0:/dev/ttyAMA0
+      - /dev/gpiochip0
+      - /dev/gpiochip4
+    group_add:
+      - audio
+      - dialout
+      - gpio
+      - sudo      
+    environment:
+      - DISPLAY=${DISPLAY}
+      - PULSE_SERVER=unix:/run/user/${USER_ID}/pulse/native
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+    network_mode: host
+    ports:
+      - "8000:8000"  
+    stdin_open: true
+    tty: true

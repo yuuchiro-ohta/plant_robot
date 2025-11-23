@@ -1,0 +1,21 @@
+# 必要に応じて編集し、コピーして.envとしてください
+
+# hostのユーザ名, ユーザID(例:1001), ユーザグループID(例:1001)
+USER_NAME = user_name
+USER_ID = user_id
+USER_GID = user_gid
+GPIO_GID = gpio_gid
+
+# ラズパイのIPアドレス(例:192.168.X.XXX)
+RASPI_IP = raspi_ip
+
+# arecordで使用しているマイクデバイスのカード番号(例:0)、デバイス番号(例:0)
+ARECORD_CARD = arecord_card
+ARECORD_DEVICE = arecord_device
+
+# ラズパイ上でollamaを実行する場合のPATH(例:http://localhost:11434/api/generate)
+# MODEL名(例:gemma2:2b)
+OLLAMA_PATH =  ollma_path
+OLLAMA_MODEL = ollama_model
+
+
