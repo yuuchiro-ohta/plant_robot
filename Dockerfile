@@ -45,7 +45,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # pip パッケージ
-RUN pip install --no-cache-dir requests python-dotenv vosk pyserial gpiod
+RUN pip install --no-cache-dir requests python-dotenv vosk pyserial gpiod spidev
 
 ARG USER_NAME
 ARG USER_ID
