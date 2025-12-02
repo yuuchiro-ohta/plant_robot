@@ -40,3 +40,30 @@ OLLAMA_MODEL = gemma2:2b
 ```bash
 python3 main.py
 ```
+
+
+## ROSの使い方
+
+端末1
+```bash 
+cd ros2_ws
+colcon build
+source install/setup.bash
+ros2 run robot_controller action
+```
+
+端末2
+```bash
+# 前進
+ros2 topic pub /motion_command std_msgs/String "data: 'forward'" --once
+# 後退
+ros2 topic pub /motion_command std_msgs/String "data: 'back'" --once
+# 左回転
+ros2 topic pub /motion_command std_msgs/String "data: 'left'" --once
+# 右回転
+ros2 topic pub /motion_command std_msgs/String "data: 'right'" --once
+# 停止（モータ動作停止）
+ros2 topic pub /motion_command std_msgs/String "data: 'stop'" --once
+# 会話モード（モータ動作停止）
+ros2 topic pub /motion_command std_msgs/String "data: 'talk'" --once
+```

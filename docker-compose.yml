@@ -10,11 +10,13 @@ services:
     env_file:
       - .env
     container_name: speech-app
+    privileged: true 
     volumes:
       - .:/app
       - /run/user/${USER_ID}/pulse/native:/run/user/${USER_ID}/pulse/native
       - /home/${USER_NAME}/.config/pulse/cookie:/home/${USER_NAME}/.config/pulse/cookie:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /sys/class/pwm:/sys/class/pwm:rw 
     devices:
       - /dev/snd:/dev/snd
       #- /dev/imu_bwt901cl:/dev/imu_bwt901cl
