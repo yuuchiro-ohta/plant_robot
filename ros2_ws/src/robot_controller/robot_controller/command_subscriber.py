@@ -1,13 +1,10 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-import robot_controller.dynamixel_motion as motion
-import robot_controller.dynamixel_module as motor
+import robot_controller.motion as motion
 import robot_controller.speak_and_listen as speak_and_listen
 import time
 import threading
-
-initial_position = [280, 180, 180, 280, 180, 180, 280, 180, 180, 280, 180, 180]
 
 class CommandSubscriberAction(Node):
     def __init__(self):
@@ -22,16 +19,7 @@ class CommandSubscriberAction(Node):
         )
         self.current_thread = None
         self.get_logger().info("Motion controller started. Waiting for commands...")
-
-        self.init_setting()
-
-    def init_setting(self):
-        for i, position in enumerate(initial_position, start=1):
-            motor.dynamixel_lED_control(i, 1)
-            motor.dynamixel_torque_control(i, 1)
-            time.sleep(0.01)
-        self.get_logger().info("Initialized positions")
-            
+       
     def listener_callback(self, msg):
         cmd = msg.data.lower()
         self.get_logger().info(f"Received command: {cmd}")
@@ -43,10 +31,8 @@ class CommandSubscriberAction(Node):
             self.current_thread.join()
 
         self.stop_motion = False
-
-        if cmd == "init":
-            self.start_motion(self.init_motion)            
-        elif cmd == "forward":
+           
+        if cmd == "forward":
             self.start_motion(self.forward_motion)
         elif cmd == "back":
             self.start_motion(self.back_motion)
@@ -56,6 +42,8 @@ class CommandSubscriberAction(Node):
             self.start_motion(self.right_motion)
         elif cmd == "talk":
             self.start_motion(self.talk_motion)
+        elif cmd == "stop":
+            self.start_motion(self.stop)
         else:
             self.get_logger().warn(f"Unknown command: {cmd}")
 
@@ -63,34 +51,30 @@ class CommandSubscriberAction(Node):
         self.current_thread = threading.Thread(target=motion_func)
         self.current_thread.start()
     
-    # ==== モーション定義 ====
-    def init_motion(self):
-        self.stop_motion = False
-        motion.init_motion()
+    def forward_motion(self):
+        motion.forward_motion()
         time.sleep(0.01)
 
-    def forward_motion(self):
-        while not self.stop_motion:
-            motion.forward_motion()
-            time.sleep(0.01)
-
     def back_motion(self):
-        while not self.stop_motion:
-            motion.back_motion()
-            time.sleep(0.01)
+        motion.back_motion()
+        time.sleep(0.01)
 
     def left_motion(self):
-        while not self.stop_motion:
-            motion.left_motion()
-            time.sleep(0.01)
+        motion.left_motion()
+        time.sleep(0.01)
 
     def right_motion(self):
-        while not self.stop_motion:
-            motion.right_motion()
-            time.sleep(0.01)
+        motion.right_motion()
+        time.sleep(0.01)
 
     def talk_motion(self):
+        motion.stop()
         speak_and_listen.talk()
+        time.sleep(0.01)
+
+    def stop(self):
+        self.stop_motion = False
+        motion.stop()
         time.sleep(0.01)
 
 def main (args=None):
