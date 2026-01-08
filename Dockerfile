@@ -39,25 +39,27 @@ WORKDIR /app
 
 # --- Python環境 ---
 RUN apt-get update && apt-get install -y \
-    sudo python3-pip python3-setuptools python3-venv \
+    sudo python3-pip python3-setuptools python3-venv python3-lgpio \
     open-jtalk open-jtalk-mecab-naist-jdic alsa-utils pulseaudio-utils \
-    curl ffmpeg unzip libatomic1  git \
+    curl ffmpeg unzip libatomic1 git \
     && rm -rf /var/lib/apt/lists/*
 
 # pip パッケージ
-RUN pip install --no-cache-dir requests python-dotenv vosk pyserial gpiod spidev
+RUN pip install --no-cache-dir requests python-dotenv vosk pyserial gpiod spidev python-periphery   adafruit-circuitpython-pca9685 adafruit-circuitpython-busdevice
 
 ARG USER_NAME
 ARG USER_ID
 ARG USER_GID
 ARG GPIO_GID
+ARG I2C_GID
 RUN mkdir -p /home/${USER_NAME} && chown ${USER_ID}:${USER_GID} /home/${USER_NAME}
 RUN mkdir -p /home/${USER_NAME}/.config/pulse && chown -R ${USER_ID}:${USER_GID} /home/${USER_NAME}/.config
 RUN echo "${USER_NAME}:x:${USER_ID}:${USER_GID}::/home/${USER_NAME}:/bin/bash" >> /etc/passwd
 
 # グループ作成（存在しなければ作成）
 RUN groupadd -f -g ${USER_GID} ${USER_NAME} \
-    && groupadd -f -g ${GPIO_GID} gpio
+    && groupadd -f -g ${GPIO_GID} gpio \
+    && groupadd -f -g ${I2C_GID} i2c
 
 # ユーザー作成（存在しなければ作成） + sudo 権限付与
 RUN apt-get update && apt-get install -y sudo \

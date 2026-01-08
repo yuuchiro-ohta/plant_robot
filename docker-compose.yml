@@ -7,16 +7,19 @@ services:
         USER_ID: ${USER_ID}
         USER_GID: ${USER_GID}
         GPIO_GID: ${GPIO_GID}
+        I2C_GID: ${I2C_GID}
     env_file:
       - .env
     container_name: speech-app
     privileged: true 
     volumes:
       - .:/app
+      - /dev:/dev
       - /run/user/${USER_ID}/pulse/native:/run/user/${USER_ID}/pulse/native
       - /home/${USER_NAME}/.config/pulse/cookie:/home/${USER_NAME}/.config/pulse/cookie:ro
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /sys/class/pwm:/sys/class/pwm:rw 
+      - /sys/class/gpio:/sys/class/gpio:rw
     devices:
       - /dev/snd:/dev/snd
       #- /dev/imu_bwt901cl:/dev/imu_bwt901cl
@@ -27,11 +30,13 @@ services:
       - /dev/ttyAMA0:/dev/ttyAMA0
       - /dev/gpiochip0:/dev/gpiochip0
       - /dev/gpiochip4:/dev/gpiochip4
+      - /dev/i2c-1:/dev/i2c-1
     group_add:
       - audio
       - dialout
       - gpio
-      - sudo      
+      - sudo
+      - i2c      
     environment:
       - DISPLAY=${DISPLAY}
       - PULSE_SERVER=unix:/run/user/${USER_ID}/pulse/native
