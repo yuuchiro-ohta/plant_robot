@@ -41,6 +41,11 @@ OLLAMA_MODEL = gemma2:2b
 python3 main.py
 ```
 
+## スピーカーの音量を上げたい場合
+
+```
+amixer set PCM 80%
+```
 
 ## ROSの使い方
 
